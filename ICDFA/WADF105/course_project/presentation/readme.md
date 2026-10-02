@@ -18,7 +18,7 @@ This folder contains the main presentation for the WADF105 course project. It tr
 
 | | |
 | --- | --- |
-| **File** | [`HTTPS_TCPIP_Presentation.pptx`]([HTTPS_TCPIP_Presentation.pptx](https://studio.youtube.com/channel/UC9VrDjlshw5m_p2g2ut1qgw/videos/upload?filter=%5B%5D&sort=%7B%22columnType%22%3A%22date%22%2C%22sortOrder%22%3A%22DESCENDING%22%7D)) |
+| **File** | ((https://studio.youtube.com/channel/UC9VrDjlshw5m_p2g2ut1qgw/videos/upload?filter=%5B%5D&sort=%7B%22columnType%22%3A%22date%22%2C%22sortOrder%22%3A%22DESCENDING%22%7D)) |
 | **Format** | PowerPoint, 16:9 |
 | **Structure** | 1 title slide, **12 content slides**, 1 references slide |
 | **Speaker notes** | Included on every slide (open *Notes* view) |
