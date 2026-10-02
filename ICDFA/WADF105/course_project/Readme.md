@@ -27,7 +27,7 @@ It also maps TCP/IP to OSI, compares TCP and UDP, and works through one realisti
 | Folder | Content |
 | --- | --- |
 | [`presentation/`](presentation) | 12-content-slide PowerPoint with speaker notes and an editable packet journey diagram |
-| [`vedio/`](video) | 45-second animated explainer (open `https_explainer.html` in a browser) |
+| [`vedio/`](vedio) | 45-second animated explainer (open `https_explainer.html` in a browser) |
 | [`docs/`](docs) | Contribution record, declarations and the requirements audit |
 | [`assets/`](assets) | Slide previews and screenshots |
 
