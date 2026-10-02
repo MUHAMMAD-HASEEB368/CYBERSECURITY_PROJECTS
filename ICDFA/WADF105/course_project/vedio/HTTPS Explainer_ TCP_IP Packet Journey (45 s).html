@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Opening a Secure Website: HTTPS Explainer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:#03070c;display:flex;align-items:center;justify-content:center;font-family:"Segoe UI",Arial,sans-serif}
+.stage{position:relative;width:min(100vw,calc(100vh*16/9));aspect-ratio:16/9;container-type:inline-size;background:radial-gradient(circle at 50% 40%,#0e2438,#050b13 72%);overflow:hidden}
+svg{position:absolute;inset:0;width:100%;height:100%}
+.sc{opacity:0;transition:opacity .5s}.sc.on{opacity:1}
+.fx{opacity:0}.on .fx{animation:fx .6s var(--d,0s) both}
+@keyframes fx{from{opacity:0}to{opacity:1}}
+.mv{}.on .mv{animation:mv var(--t,1s) var(--d,0s) both linear}
+@keyframes mv{from{transform:translate(0,0)}to{transform:translate(var(--dx),0)}}
+.on .ty{animation:ty 2.4s steps(19) .8s both}@keyframes ty{from{width:0}to{width:175px}}
+.on .pu{animation:pu .5s 3.4s 3 alternate both}@keyframes pu{from{opacity:.4}to{opacity:1}}
+#cap{position:absolute;left:8%;right:8%;bottom:2.4%;text-align:center;color:#fff;font-size:2cqw;background:rgba(0,0,0,.55);padding:.5cqw 1.2cqw;border-radius:.8cqw;opacity:0;transition:opacity .3s}
+#bar{position:absolute;left:0;bottom:0;height:.45cqw;width:0;background:#3dffb0}
+.ctl{position:absolute;right:1.5cqw;top:1.5cqw;display:flex;gap:1cqw;z-index:3}
+button{font:inherit;font-size:1.5cqw;color:#e6f1ff;background:rgba(10,30,48,.85);border:1px solid #3fd0ff;border-radius:.6cqw;padding:.5cqw 1.2cqw;cursor:pointer}
+#play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:3cqw;padding:1.2cqw 3cqw;background:#0e7c86;z-index:4}
+</style></head><body>
+<div class="stage" id="st">
+<svg id="sv" viewBox="0 0 1280 720" font-family="Segoe UI,Arial,sans-serif">
+<defs>
+<filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<g id="lap"><rect x="-70" y="-50" width="140" height="90" rx="8" fill="#0d1b2a" stroke="#3fd0ff" stroke-width="3"/><rect x="-60" y="-40" width="120" height="70" rx="3" fill="#07111c"/><path d="M-90 48H90L78 40H-78Z" fill="#1b3247" stroke="#3fd0ff" stroke-width="2"/></g>
+<g id="rtr"><rect x="-55" y="-14" width="110" height="34" rx="8" fill="#0d1b2a" stroke="#3dffb0" stroke-width="3"/><circle cx="-30" cy="3" r="4" fill="#3dffb0"/><circle cx="-15" cy="3" r="4" fill="#3dffb0"/><line x1="-35" y1="-14" x2="-46" y2="-46" stroke="#3dffb0" stroke-width="3"/><line x1="35" y1="-14" x2="46" y2="-46" stroke="#3dffb0" stroke-width="3"/></g>
+<g id="srv"><g fill="#0d1b2a" stroke="#3fd0ff" stroke-width="3"><rect x="-42" y="-55" width="84" height="26" rx="4"/><rect x="-42" y="-24" width="84" height="26" rx="4"/><rect x="-42" y="7" width="84" height="26" rx="4"/></g><g fill="#3dffb0"><circle cx="-28" cy="-42" r="4"/><circle cx="-28" cy="-11" r="4"/><circle cx="-28" cy="20" r="4"/></g></g>
+</defs>
+<g opacity=".18" fill="none" stroke-width="2"><polyline points="0,600 300,520 520,620 900,540 1280,640" stroke="#3fd0ff"/><polyline points="0,120 260,200 620,110 980,190 1280,100" stroke="#3dffb0"/></g>
+</svg>
+<div id="cap"></div><div id="bar"></div>
+<div class="ctl"><button id="vb">Voice: ON</button><button id="mb">Music: ON</button></div>
+<button id="play">&#9654; Play (45 s)</button>
+</div>
+<script>
+const sv=document.getElementById('sv');
+const T=(x,y,s,t,o={})=>`<text x="${x}" y="${y}" font-size="${s}" text-anchor="${o.a||'middle'}" fill="${o.c||'#e6f1ff'}" class="fx" style="--d:${o.d||0}s"${o.f?' font-family="Consolas,monospace"':''}${o.w===0?'':' font-weight="700"'}>${t}</text>`;
+const P=(x,y,dx,d,t,l,c,w=110)=>`<g transform="translate(${x},${y})"><g class="mv" style="--dx:${dx}px;--d:${d};--t:${t}"><rect x="${-w/2}" y="-20" width="${w}" height="40" rx="9" fill="${c}" filter="url(#gl)"/><text y="6" font-size="18" text-anchor="middle" fill="#04121d" font-weight="700">${l}</text></g></g>`;
+const B=(x,y,w,h,c,t,d,tc)=>`<g class="fx" style="--d:${d}s"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${c}"/><text x="${x+w/2}" y="${y+h/2+6}" font-size="18" text-anchor="middle" fill="${tc||'#04121d'}" font-weight="700">${t}</text></g>`;
+const U=(id,x,y,s,d)=>`<g class="fx" style="--d:${d||0}s"><use href="#${id}" transform="translate(${x},${y}) scale(${s})"/></g>`;
+const L=(x1,y1,x2,y2,c,d,da)=>`<line class="fx" style="--d:${d}s" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="2" ${da?'stroke-dasharray="8 8"':''} opacity=".5"/>`;
+const C='#3fd0ff',G='#3dffb0',O='#ffb347',TC='#0e7c86';
+const S=[];
+// 1
+S.push(`<clipPath id="tc"><rect class="ty" x="440" y="248" width="0" height="26"/></clipPath>`+
+T(640,110,46,'What happens after you press Enter?')+
+`<g class="fx"><circle cx="230" cy="300" r="34" fill="#2a4a66"/><ellipse cx="230" cy="400" rx="64" ry="56" fill="#2a4a66"/></g>`+
+U('lap',560,350,2.4,.2)+
+`<g class="fx" style="--d:.6s"><rect x="430" y="246" width="260" height="30" rx="6" fill="#11283b" stroke="${C}"/></g>`+
+`<text x="440" y="268" font-size="17" font-family="Consolas,monospace" fill="#e6f1ff" clip-path="url(#tc)">https://example.com</text>`+
+`<g class="pu"><rect x="790" y="312" width="110" height="46" rx="10" fill="${TC}" stroke="${G}" stroke-width="2"/><text x="845" y="343" font-size="22" text-anchor="middle" fill="#fff" font-weight="700">Enter</text></g>`);
+// 2
+S.push(T(640,110,40,'Application Layer — DNS',{c:C})+U('lap',220,380,1.3)+U('srv',1060,380,1.5,.2)+
+T(220,480,22,'Browser',{d:.2,w:0})+T(1060,500,22,'DNS resolver',{d:.2,w:0})+
+L(330,320,950,320,C,.6,1)+L(950,400,330,400,O,.6,1)+
+P(400,320,480,'.8s','1.6s','example.com ?',C,190)+P(930,400,-480,'2.8s','1.6s','203.0.113.10',O,190)+
+T(640,570,34,'example.com  →  203.0.113.10',{d:4.6,c:G,f:1})+T(640,610,16,'(documentation-range example address)',{d:4.8,c:'#7f97b0',w:0}));
+// 3
+S.push(T(640,110,44,'TCP — Port 443',{c:C})+U('lap',220,400,1.3)+U('srv',1060,400,1.5,.2)+
+T(220,500,22,'Client',{w:0})+T(1060,520,22,'Web server :443',{w:0})+
+L(350,300,930,300,C,.3,1)+L(930,390,350,390,O,.3,1)+L(350,480,930,480,C,.3,1)+
+P(410,300,460,'.6s','1.1s','SYN',C)+P(870,390,-460,'2.2s','1.1s','SYN/ACK',O,130)+P(410,480,460,'3.8s','1.1s','ACK',C)+
+T(640,610,32,'Connection established',{d:5.4,c:G}));
+// 4
+S.push(T(640,100,38,'TLS Encryption — Confidentiality &amp; Integrity',{c:C})+
+B(90,240,330,130,'#10283b','',.4)+T(255,290,22,'GET / HTTP/1.1',{d:.5,f:1})+T(255,325,22,'Host: example.com',{d:.5,f:1})+T(255,220,20,'HTTP data (readable)',{d:.4,c:O,w:0})+
+T(640,250,22,'ClientHello  →',{d:1.6,f:1})+T(640,290,22,'←  ServerHello + certificate',{d:2.4,f:1})+T(640,330,22,'↔  key agreement',{d:3.2,f:1})+T(640,220,20,'TLS handshake',{d:1.5,c:G,w:0})+
+B(860,240,330,130,'#0d3a33','',4.4)+T(1025,290,22,'8f3a9c e71b40',{d:4.6,f:1,c:G})+T(1025,325,22,'d5a2c7 4b19fe',{d:4.6,f:1,c:G})+T(1025,220,20,'Encrypted data (HTTPS)',{d:4.4,c:G,w:0})+
+T(640,480,34,'HTTP  +  TLS  =  HTTPS',{d:5.4})+
+T(640,640,15,'Traditional HTTPS over TCP shown. HTTP/3 uses QUIC over UDP.',{c:'#7f97b0',w:0,d:5.8}));
+// 5
+const rw=[['Application','DATA',[['DATA',C,160]]],['Transport','Segment',[['TCP HDR',O,110],['DATA',C,160]]],['Internet','Packet',[['IP HDR',G,100],['TCP HDR',O,110],['DATA',C,160]]],['Network Access','Frame',[['FRAME HDR',TC,130],['IP HDR',G,90],['TCP HDR',O,100],['DATA',C,130],['TRAILER',TC,100]]]];
+let s5=T(640,80,34,'Encapsulation: data moves down the TCP/IP layers');
+rw.forEach((r,i)=>{const y=150+i*95,d=.4+i*1.6;s5+=B(50,y,250,62,'#10283b',r[0],d,'#e6f1ff');let x=340;r[2].forEach(b=>{s5+=B(x,y,b[2],62,b[1],b[0],d);x+=b[2]+6;});s5+=T(960,y+38,24,r[1]==='DATA'?'Application data':'PDU: '+r[1],{d:d,a:'start',c:'#b7d4ee',w:0});});
+s5+=T(640,570,30,'→  0 1 0 0 1 1 0 1   1 0 1 1 0 0 1 0  (bits on the wire)',{d:6.8,f:1,c:G});S.push(s5);
+// 6
+const nx=[130,370,640,910,1150],nm=['Laptop','Home router','ISP','Internet routers','Web server'],ic=['lap','rtr','rtr','rtr','srv'],sc=[.9,1,1,1,1];
+let s6=T(640,80,34,'Packet journey: request and response');
+nx.forEach((x,i)=>{s6+=U(ic[i],x,370,sc[i],.2)+T(x,445,20,nm[i],{w:0,d:.2});});
+s6+=L(130,235,1150,235,C,.2)+L(130,500,1150,500,O,.2)+T(130,200,20,'HTTPS request  →  (dest. port 443)',{a:'start',c:C,d:.2})+T(1150,550,20,'←  HTTPS response',{a:'end',c:O,d:.2})+
+P(130,235,1020,'.4s','3.2s','Request',C,120)+P(1150,500,-1020,'3.9s','3s','Response',O,130);S.push(s6);
+// 7
+let s7=T(640,85,36,'Four TCP/IP layers, working together');
+[['Application','DNS · TLS / HTTPS'],['Transport','TCP · port 443'],['Internet','IP routing'],['Network Access','Ethernet / Wi-Fi']].forEach((l,i)=>{const y=150+i*105;s7+=B(70,y,340,80,'#10283b','',.3+i*.3)+T(240,y+34,24,l[0],{d:.3+i*.3})+T(240,y+64,18,l[1],{d:.3+i*.3,c:G,w:0});});
+['DNS finds the server.','TCP establishes the connection.','TLS secures the communication.','IP routes the packets.'].forEach((t,i)=>{s7+=T(480,205+i*95,34,t,{a:'start',d:1.2+i*.8});});
+S.push(s7);
+S.forEach((c,i)=>sv.insertAdjacentHTML('beforeend',`<g class="sc" id="s${i}">${c}</g>`));
+const sc_=[...document.querySelectorAll('.sc')],B_=[0,5,11,18,25,33,40,45];
+const V=[[0,'What happens when we type a secure website address and press Enter?'],[5,'First, DNS translates the domain name into an IP address.'],[11,'Next, TCP establishes a connection using the three-way handshake.'],[18,'TLS then encrypts the communication, creating HTTPS.'],[25,'The data is encapsulated through the TCP/IP layers'],[33,'and travels through routers to the web server.'],[37,'The response then follows the reverse path, delivering the webpage securely to the user.']];
+let t0,raf,cur=-1,nv=0,voice=true,music=true,ctx,mg,run=false;
+const cap=document.getElementById('cap'),bar=document.getElementById('bar'),pl=document.getElementById('play');
+function say(t){if(!voice||!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=1.02;const v=speechSynthesis.getVoices().find(v=>/^en/i.test(v.lang)&&/natural|google|online|male|daniel|david/i.test(v.name))||speechSynthesis.getVoices().find(v=>/^en/i.test(v.lang));if(v)u.voice=v;speechSynthesis.speak(u);}
+function startMusic(){if(!music)return;ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();mg=ctx.createGain();mg.gain.value=0.035;const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=700;mg.connect(f);f.connect(ctx.destination);[110,164.81,220,277.18].forEach((fr,i)=>{const o=ctx.createOscillator();o.type='sine';o.frequency.value=fr;const g=ctx.createGain();g.gain.value=.25;const l=ctx.createOscillator();l.frequency.value=.15+i*.07;const lg=ctx.createGain();lg.gain.value=.12;l.connect(lg);lg.connect(g.gain);o.connect(g);g.connect(mg);o.start();l.start();});}
+function stopMusic(){if(mg&&ctx){mg.gain.linearRampToValueAtTime(0,ctx.currentTime+1.2);setTimeout(()=>ctx.close().then(()=>ctx=null),1400);}}
+function tick(now){const e=(now-t0)/1000;let i=0;B_.forEach((b,k)=>{if(k<7&&e>=b)i=k;});
+if(i!==cur){sc_.forEach((g,k)=>g.classList.toggle('on',k===i));cur=i;}
+while(nv<V.length&&e>=V[nv][0]){cap.textContent=V[nv][1];cap.style.opacity=1;say(V[nv][1]);nv++;}
+bar.style.width=Math.min(e/45,1)*100+'%';
+if(e<45)raf=requestAnimationFrame(tick);else{run=false;stopMusic();pl.textContent='↻ Replay';pl.style.display='';}}
+pl.onclick=()=>{if(window.speechSynthesis)speechSynthesis.cancel();sc_.forEach(g=>g.classList.remove('on'));void sv.getBoundingClientRect();cur=-1;nv=0;cap.style.opacity=0;pl.style.display='none';startMusic();run=true;t0=performance.now();raf=requestAnimationFrame(tick);};
+document.getElementById('vb').onclick=e=>{voice=!voice;e.target.textContent='Voice: '+(voice?'ON':'OFF');if(!voice&&window.speechSynthesis)speechSynthesis.cancel();};
+document.getElementById('mb').onclick=e=>{music=!music;e.target.textContent='Music: '+(music?'ON':'OFF');if(mg&&ctx)mg.gain.value=music?0.035:0;};
+if(window.speechSynthesis)speechSynthesis.getVoices();
+</script></body></html>
